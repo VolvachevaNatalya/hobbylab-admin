@@ -20,3 +20,30 @@ export interface UserListResponse {
   limit: number;
   offset: number;
 }
+
+export interface OrgUser {
+  id: number;
+  name: string | null;
+  email: string;
+  role: string;
+}
+
+export interface OrgListItem {
+  id: number;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  city_id: number | null;
+  status: string | null;
+  verified: boolean;
+  created_at: string | null;
+  users: OrgUser[];
+}
+
+export interface OrgListResponse {
+  items: OrgListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
