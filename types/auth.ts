@@ -47,3 +47,35 @@ export interface OrgListResponse {
   limit: number;
   offset: number;
 }
+
+export interface EventCategory {
+  id: number;
+  name: string | null;
+  name_en: string | null;
+  name_ru: string | null;
+  name_he: string | null;
+}
+
+export interface EventListItem {
+  id: number;
+  title: string | null;
+  status: string | null;
+  start_datetime: string | null;
+  end_datetime: string | null;
+  created_at: string | null;
+  city: string | null;
+  city_id: number | null;
+  price: number | null;
+  is_nationwide: boolean;
+  series_id: number | null;
+  organization_id: number | null;
+  organization_name: string | null;
+  categories: EventCategory[];
+}
+
+export interface EventListResponse {
+  items: EventListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
