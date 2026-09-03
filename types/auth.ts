@@ -79,3 +79,19 @@ export interface EventListResponse {
   limit: number;
   offset: number;
 }
+
+export interface CategoryListItem {
+  id: number;
+  name: string | null;
+  name_en: string | null;
+  name_ru: string | null;
+  name_he: string | null;
+  icon_url: string | null;
+}
+
+export interface CategoryListResponse {
+  items: CategoryListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
