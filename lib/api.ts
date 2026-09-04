@@ -15,15 +15,22 @@ export async function apiFetch<T>(
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
-  const res = await fetch(`${getApiUrl()}${path}`, {
-    ...options,
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers ?? {}),
-    },
-  });
+  // status 0 = internal sentinel meaning no HTTP response was received
+  // (timeout, DNS failure, connection refused, etc.).
+  let res: Response;
+  try {
+    res = await fetch(`${getApiUrl()}${path}`, {
+      ...options,
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers ?? {}),
+      },
+    });
+  } catch {
+    return { data: null, status: 0 };
+  }
 
   if (!res.ok) {
     return { data: null, status: res.status };
