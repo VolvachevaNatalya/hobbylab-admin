@@ -1,49 +1,9 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import type { OrgListItem, OrgListResponse, OrgUser } from "@/types/auth";
+import type { OrgListResponse, CategoryListResponse } from "@/types/auth";
+import OrganizationsClient from "@/components/OrganizationsClient";
 
 const PAGE_SIZE = 50;
-
-function formatDate(value: string | null): string {
-  if (!value) return "—";
-  try {
-    return new Date(value).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return "—";
-  }
-}
-
-function OrgUsers({ users }: { users: OrgUser[] }) {
-  if (users.length === 0) {
-    return <span className="text-gray-400">—</span>;
-  }
-  return (
-    <div className="flex flex-col gap-2">
-      {users.map((user) => (
-        <div key={user.id} className="flex flex-col gap-0.5">
-          {user.name && (
-            <div className="text-sm text-gray-900">{user.name}</div>
-          )}
-          <div
-            className={
-              user.name ? "text-xs text-gray-500" : "text-sm text-gray-700"
-            }
-          >
-            {user.email}
-          </div>
-          <span className="inline-flex w-fit items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium capitalize text-gray-600">
-            {user.role}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
@@ -54,15 +14,20 @@ export default async function OrganizationsPage({ searchParams }: PageProps) {
   const page = Math.max(1, Number(pageParam) || 1);
   const offset = (page - 1) * PAGE_SIZE;
 
-  const { data, status } = await apiFetch<OrgListResponse>(
-    `/admin/organizations?limit=${PAGE_SIZE}&offset=${offset}`
-  );
+  const [orgsResult, catsResult] = await Promise.all([
+    apiFetch<OrgListResponse>(
+      `/admin/organizations?limit=${PAGE_SIZE}&offset=${offset}`
+    ),
+    // Categories are needed for the org form; failure is non-critical —
+    // the table still renders and category selection shows "none available".
+    apiFetch<CategoryListResponse>(`/admin/categories?limit=100`),
+  ]);
 
-  if (status === 401 || status === 403) {
+  if (orgsResult.status === 401 || orgsResult.status === 403) {
     redirect("/api/auth/logout");
   }
 
-  if (!data) {
+  if (!orgsResult.data) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
         <p className="font-medium text-red-700">Failed to load organizations</p>
@@ -73,140 +38,17 @@ export default async function OrganizationsPage({ searchParams }: PageProps) {
     );
   }
 
-  const { items, total } = data;
+  const { items, total } = orgsResult.data;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const hasPrev = page > 1;
-  const hasNext = page < totalPages;
-
-  const HEADINGS = [
-    "Name",
-    "Email",
-    "Phone",
-    "City",
-    "Status",
-    "Verified",
-    "Users",
-    "Created",
-  ] as const;
+  const categories = catsResult.data?.items ?? [];
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <h1 className="text-xl font-semibold text-gray-900">Organizations</h1>
-        <span className="text-sm text-gray-400">{total} total</span>
-      </div>
-
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {HEADINGS.map((heading) => (
-                  <th
-                    key={heading}
-                    scope="col"
-                    className="whitespace-nowrap px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                  >
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {items.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={HEADINGS.length}
-                    className="px-4 py-10 text-center text-sm text-gray-400"
-                  >
-                    No organizations found.
-                  </td>
-                </tr>
-              ) : (
-                items.map((org: OrgListItem) => (
-                  <tr
-                    key={org.id}
-                    className="transition-colors hover:bg-gray-50"
-                  >
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-900">
-                      {org.name ?? <span className="text-gray-400">—</span>}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-700">
-                      {org.email ?? <span className="text-gray-400">—</span>}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                      {org.phone ?? <span className="text-gray-400">—</span>}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                      {org.city ?? <span className="text-gray-400">—</span>}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm">
-                      {org.status ? (
-                        <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium capitalize text-gray-700">
-                          {org.status}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400">—</span>
-                      )}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm">
-                      {org.verified ? (
-                        <span className="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-semibold text-green-700">
-                          Verified
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">
-                          Not verified
-                        </span>
-                      )}
-                    </td>
-                    <td className="min-w-[160px] px-4 py-3">
-                      <OrgUsers users={org.users} />
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">
-                      {formatDate(org.created_at)}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          {hasPrev ? (
-            <Link
-              href={`/organizations?page=${page - 1}`}
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              ← Previous
-            </Link>
-          ) : (
-            <span className="cursor-not-allowed rounded-lg border border-gray-100 px-4 py-2 text-gray-300">
-              ← Previous
-            </span>
-          )}
-
-          <span className="text-gray-500">
-            Page {page} of {totalPages}
-          </span>
-
-          {hasNext ? (
-            <Link
-              href={`/organizations?page=${page + 1}`}
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
-            >
-              Next →
-            </Link>
-          ) : (
-            <span className="cursor-not-allowed rounded-lg border border-gray-100 px-4 py-2 text-gray-300">
-              Next →
-            </span>
-          )}
-        </div>
-      )}
-    </div>
+    <OrganizationsClient
+      items={items}
+      total={total}
+      page={page}
+      totalPages={totalPages}
+      categories={categories}
+    />
   );
 }

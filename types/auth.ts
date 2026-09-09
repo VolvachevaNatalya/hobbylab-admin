@@ -95,3 +95,41 @@ export interface CategoryListResponse {
   limit: number;
   offset: number;
 }
+
+export interface CityItem {
+  id: number;
+  name_en: string;
+  name_he: string;
+  name_ru: string;
+}
+
+export interface OrgDetailItem {
+  id: number;
+  name: string | null;
+  description: string | null;
+  logo_url: string | null;
+  banner_url: string | null;
+  email: string | null;
+  phone: string | null;
+  website: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  telegram_url: string | null;
+  youtube_url: string | null;
+  tiktok_url: string | null;
+  whatsapp_url: string | null;
+  address: string | null;
+  city: string | null;
+  city_id: number | null;
+  city_name_en: string | null;
+  city_name_he: string | null;
+  city_name_ru: string | null;
+  verified: boolean;
+  status: string | null;
+  trial_lesson_available: boolean;
+  trial_lesson_price: number | null;
+  trial_lesson_comment: string | null;
+  categories: EventCategory[];
+  users: OrgUser[];
+  created_at: string | null;
+}
