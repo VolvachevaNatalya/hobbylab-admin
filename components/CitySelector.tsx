@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { CityItem } from "@/types/auth";
+import type { CityItem } from "@/types/api";
 
 export interface CityValue {
   id: number;

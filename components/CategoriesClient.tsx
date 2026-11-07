@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CategoryIcon from "@/components/CategoryIcon";
-import type { CategoryListItem } from "@/types/auth";
+import type { CategoryListItem } from "@/types/api";
 import {
   createCategory,
   updateCategory,

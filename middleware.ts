@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-const COOKIE_NAME = "hobbylab_token";
+import { COOKIE_NAME } from "@/lib/constants";
 
 // Paths that do not require authentication
 const PUBLIC_PREFIXES = ["/login", "/api/auth"];
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasToken = request.cookies.has(COOKIE_NAME);
 

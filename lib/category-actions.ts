@@ -1,8 +1,11 @@
 "use server";
 
-import { cookies } from "next/headers";
-
-const COOKIE_NAME = "hobbylab_token";
+import {
+  getToken,
+  buildAuthHeaders,
+  getApiBase,
+  extractError,
+} from "@/lib/server-fetch";
 
 export type CategoryFormData = {
   name: string;
@@ -17,40 +20,6 @@ export type CategoryActionResult = {
   message?: string;
   sessionExpired?: boolean;
 };
-
-async function getToken(): Promise<string | undefined> {
-  const cookieStore = await cookies();
-  return cookieStore.get(COOKIE_NAME)?.value;
-}
-
-function buildAuthHeaders(token: string | undefined): Record<string, string> {
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-function extractError(body: unknown): string {
-  if (typeof body !== "object" || body === null) {
-    return "An unexpected error occurred. Please try again.";
-  }
-  const b = body as Record<string, unknown>;
-  if (typeof b.detail === "string") return b.detail;
-  if (Array.isArray(b.detail)) {
-    return b.detail
-      .map((d) => {
-        if (typeof d === "object" && d !== null && "msg" in d) {
-          return String((d as { msg: unknown }).msg);
-        }
-        return String(d);
-      })
-      .join(". ");
-  }
-  return "An unexpected error occurred. Please try again.";
-}
-
-function getApiBase(): string {
-  const url = process.env.API_URL;
-  if (!url) throw new Error("API_URL is not set");
-  return url;
-}
 
 export async function createCategory(
   data: CategoryFormData

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { CategoryListResponse } from "@/types/auth";
+import type { CategoryListResponse } from "@/types/api";
 import CategoriesClient from "@/components/CategoriesClient";
 
 const PAGE_SIZE = 50;

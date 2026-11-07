@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { AdminUser } from "@/types/auth";
+import type { AdminUser } from "@/types/api";
 import NavLink from "@/components/NavLink";
 
 const NAV_ITEMS = [
@@ -18,11 +18,24 @@ export default async function AdminLayout({
 }) {
   const { data: user, status } = await apiFetch<AdminUser>("/admin/me");
 
-  if (status !== 200) {
+  if (status === 401 || status === 403) {
     redirect("/api/auth/logout");
   }
 
-  const displayName = user!.name ?? user!.email;
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-sm rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+          <p className="font-medium text-red-700">Could not reach the server</p>
+          <p className="mt-1 text-sm text-red-600">
+            The backend is temporarily unavailable. Please try again in a moment.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const displayName = user.name ?? user.email;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

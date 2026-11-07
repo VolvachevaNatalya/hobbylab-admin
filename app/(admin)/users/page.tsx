@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
-import type { UserListItem, UserListResponse } from "@/types/auth";
+import type { UserListItem, UserListResponse } from "@/types/api";
 
 const PAGE_SIZE = 50;
 

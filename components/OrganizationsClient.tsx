@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { OrgListItem, OrgUser, CategoryListItem, OrgDetailItem } from "@/types/auth";
+import type { OrgListItem, OrgUser, CategoryListItem, OrgDetailItem } from "@/types/api";
 import {
   createOrganization,
   updateOrganization,

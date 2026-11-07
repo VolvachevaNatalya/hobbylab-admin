@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { apiFetch } from "@/lib/api";
-import type { OrgListResponse, CategoryListResponse } from "@/types/auth";
+import type { OrgListResponse, CategoryListResponse } from "@/types/api";
 import OrganizationsClient from "@/components/OrganizationsClient";
 
 const PAGE_SIZE = 50;

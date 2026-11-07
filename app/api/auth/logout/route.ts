@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-
-const COOKIE_NAME = "hobbylab_token";
+import { COOKIE_NAME } from "@/lib/constants";
 
 async function logout(request: NextRequest) {
   const cookieStore = await cookies();

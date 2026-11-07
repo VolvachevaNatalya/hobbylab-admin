@@ -56,6 +56,14 @@ export interface EventCategory {
   name_he: string | null;
 }
 
+export interface EventListItemRecurrence {
+  frequency: string;
+  interval: number;
+  end_type: string;
+  total_count: number | null;
+  end_date: string | null;
+}
+
 export interface EventListItem {
   id: number;
   title: string | null;
@@ -71,6 +79,9 @@ export interface EventListItem {
   organization_id: number | null;
   organization_name: string | null;
   categories: EventCategory[];
+  recurrence: EventListItemRecurrence | null;
+  occurrence_count: number | null;
+  last_start_datetime: string | null;
 }
 
 export interface EventListResponse {
@@ -101,6 +112,48 @@ export interface CityItem {
   name_en: string;
   name_he: string;
   name_ru: string;
+}
+
+export interface RecurrenceDetail {
+  id: number;
+  frequency: string;
+  interval: number;
+  end_type: string;
+  total_count: number | null;
+  end_date: string | null;
+  generated_until: string | null;
+  status: string;
+}
+
+export interface EventDetailItem {
+  id: number;
+  organization_id: number;
+  organization_name: string | null;
+  title: string;
+  description: string | null;
+  status: string;
+  min_age: number | null;
+  max_age: number | null;
+  age_groups: string[] | null;
+  capacity: number | null;
+  image_url: string | null;
+  banner_url: string | null;
+  start_datetime: string;
+  end_datetime: string | null;
+  address: string | null;
+  city: string | null;
+  city_id: number | null;
+  city_name_en: string | null;
+  city_name_he: string | null;
+  city_name_ru: string | null;
+  is_nationwide: boolean;
+  price: number | null;
+  price_comment: string | null;
+  categories: EventCategory[];
+  series_id: number | null;
+  occurrence_index: number | null;
+  recurrence: RecurrenceDetail | null;
+  created_at: string;
 }
 
 export interface OrgDetailItem {
