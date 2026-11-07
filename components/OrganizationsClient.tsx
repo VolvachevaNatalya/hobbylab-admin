@@ -646,7 +646,7 @@ export default function OrganizationsClient({
                         <label className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-gray-700">Email</span>
                           <input
-                            type="text"
+                            type="email"
                             value={form.email}
                             onChange={(e) => setField("email", e.target.value)}
                             disabled={disabled}
@@ -667,7 +667,7 @@ export default function OrganizationsClient({
                       <label className="flex flex-col gap-1">
                         <span className="text-sm font-medium text-gray-700">Website</span>
                         <input
-                          type="text"
+                          type="url"
                           value={form.website}
                           onChange={(e) => setField("website", e.target.value)}
                           disabled={disabled}
@@ -729,7 +729,7 @@ export default function OrganizationsClient({
                               {label}
                             </span>
                             <input
-                              type="text"
+                              type="url"
                               value={form[field]}
                               onChange={(e) => setField(field, e.target.value)}
                               disabled={disabled}
@@ -748,7 +748,7 @@ export default function OrganizationsClient({
                         <label className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-gray-700">Logo URL</span>
                           <input
-                            type="text"
+                            type="url"
                             value={form.logo_url}
                             onChange={(e) => setField("logo_url", e.target.value)}
                             disabled={disabled}
@@ -759,7 +759,7 @@ export default function OrganizationsClient({
                         <label className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-gray-700">Banner URL</span>
                           <input
-                            type="text"
+                            type="url"
                             value={form.banner_url}
                             onChange={(e) => setField("banner_url", e.target.value)}
                             disabled={disabled}

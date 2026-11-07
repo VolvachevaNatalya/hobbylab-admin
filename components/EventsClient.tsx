@@ -98,7 +98,7 @@ const EMPTY_FORM: EventFormFields = {
   recurrence_frequency: "weekly",
   recurrence_interval: "1",
   recurrence_end_type: "count",
-  recurrence_total_count: "4",
+  recurrence_total_count: "",
   recurrence_end_date: "",
 };
 
@@ -127,6 +127,12 @@ const RECURRENCE_END_TYPES = [
   { value: "count", label: "After N occurrences" },
   { value: "date", label: "On a specific date" },
   { value: "never", label: "No end" },
+] as const;
+
+const EVENT_STATUSES = [
+  { value: "active", label: "Active" },
+  { value: "draft", label: "Draft" },
+  { value: "cancelled", label: "Cancelled" },
 ] as const;
 
 const SCOPE_OPTIONS: { value: EventScope; label: string; description: string }[] = [
@@ -620,13 +626,17 @@ export default function EventsClient({
       setError("Start date/time is required.");
       return;
     }
+    if (form.end_datetime && form.end_datetime <= form.start_datetime) {
+      setError("End date/time must be after start date/time.");
+      return;
+    }
     if (form.is_recurring) {
-      if (
-        form.recurrence_end_type === "count" &&
-        !form.recurrence_total_count.trim()
-      ) {
-        setError("Number of occurrences is required.");
-        return;
+      if (form.recurrence_end_type === "count") {
+        const count = parseInt(form.recurrence_total_count.trim(), 10);
+        if (!form.recurrence_total_count.trim() || isNaN(count) || count < 1) {
+          setError("Number of occurrences must be at least 1.");
+          return;
+        }
       }
       if (
         form.recurrence_end_type === "date" &&
@@ -931,14 +941,23 @@ export default function EventsClient({
                       {isEdit && (
                         <label className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-gray-700">Status</span>
-                          <input
-                            type="text"
+                          <select
                             value={form.status}
                             onChange={(e) => setField("status", e.target.value)}
                             disabled={disabled}
-                            placeholder="e.g. active, draft, cancelled"
-                            className={INPUT_CLASS}
-                          />
+                            className={SELECT_CLASS}
+                          >
+                            <option value="">— Unchanged —</option>
+                            {!EVENT_STATUSES.some((s) => s.value === form.status) &&
+                              form.status && (
+                                <option value={form.status}>{form.status}</option>
+                              )}
+                            {EVENT_STATUSES.map((s) => (
+                              <option key={s.value} value={s.value}>
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
                         </label>
                       )}
                     </div>
@@ -1127,7 +1146,7 @@ export default function EventsClient({
                         <label className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-gray-700">Image URL</span>
                           <input
-                            type="text"
+                            type="url"
                             value={form.image_url}
                             onChange={(e) => setField("image_url", e.target.value)}
                             disabled={disabled}
@@ -1138,7 +1157,7 @@ export default function EventsClient({
                         <label className="flex flex-col gap-1">
                           <span className="text-sm font-medium text-gray-700">Banner URL</span>
                           <input
-                            type="text"
+                            type="url"
                             value={form.banner_url}
                             onChange={(e) => setField("banner_url", e.target.value)}
                             disabled={disabled}

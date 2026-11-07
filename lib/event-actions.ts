@@ -46,7 +46,7 @@ export type EventUpdatePayload = {
   end_datetime?: string | null;
   description?: string | null;
   status?: string | null;
-  category_ids: number[];
+  category_ids?: number[] | null;
   city?: string | null;
   city_id?: number | null;
   address?: string | null;
